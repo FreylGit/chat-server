@@ -1,0 +1,24 @@
+version: "3"
+
+volumes:
+  postgres_chat_volume:
+
+services:
+  pg_chat:
+    image: postgres:14-alpine3.19
+    environment:
+      - "POSTGRES_DB=${PG_DATABASE_NAME}"
+      - "POSTGRES_USER=${PG_USER}"
+      - "POSTGRES_PASSWORD=${PG_PASSWORD}"
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres_chat_volume:/var/lib/postgresql/data
+  chat_server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50052:50052"
+    depends_on:
+      - pg_chat

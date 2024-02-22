@@ -15,20 +15,20 @@ type server struct {
 	desc.UnimplementedChatV1Server
 }
 
-const grpcPort = 50051
+const grpcPort = 50052
 
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
 	if err != nil {
 		log.Fatalf("Failed to listen:%d", grpcPort)
 	}
-
+	log.Println("Start run server")
 	s := grpc.NewServer()
 	reflection.Register(s)
 	desc.RegisterChatV1Server(s, &server{})
 
 	if err := s.Serve(lis); err != nil {
-		log.Fatal("Failed to server")
+		log.Fatalf("Failed to server")
 	}
 
 }
