@@ -53,16 +53,16 @@ func (r *repo) GetByName(ctx context.Context, username string) (*model.User, err
 		return nil, err
 	}
 	q := db.Query{
-		Name:     "user_repository.ExistByName",
+		Name:     "user_repository.GetByName",
 		QueryRaw: query,
 	}
-	var user model.User
+	var user userRepo.User
 	err = r.db.DB().ScanOneContext(ctx, &user, q, args...)
 	if err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	return converter.ToUserFromRepo(user), nil
 }
 
 func (r *repo) Create(ctx context.Context, user *model.User) (int64, error) {
