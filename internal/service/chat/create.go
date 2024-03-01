@@ -11,43 +11,23 @@ func (s *serv) Create(ctx context.Context, usernames []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
-		var errTx error
 
-		if errTx != nil {
-			return errTx
-		}
-
-		for _, username := range usernames {
-			user, err := s.userRepository.GetByName(ctx, username)
+	for _, username := range usernames {
+		user, err := s.userRepository.GetByName(ctx, username)
+		if err != nil {
+			userId, err := s.userRepository.Create(ctx, &model.User{Username: username})
+			user = &model.User{Id: userId, Username: username}
 			if err != nil {
-				userId, err := s.userRepository.Create(ctx, &model.User{Username: username})
-				user = &model.User{Id: userId, Username: username}
-				if err != nil {
-					return err
-				}
-			}
-			err = s.chatUserRepository.Create(ctx, &model.ChatUser{
-				UserId: user.Id,
-				ChatId: chatId,
-			})
-			if err != nil {
-				return err
+				return 0, err
 			}
 		}
-
-		if errTx != nil {
-			return errTx
+		err = s.chatUserRepository.Create(ctx, &model.ChatUser{
+			UserId: user.Id,
+			ChatId: chatId,
+		})
+		if err != nil {
+			return 0, err
 		}
-
-		if errTx != nil {
-			return errTx
-		}
-
-		return nil
-	})
-	if err != nil {
-		return 0, err
 	}
 
 	return chatId, nil
