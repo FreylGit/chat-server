@@ -2,7 +2,8 @@ package app
 
 import (
 	"context"
-	"github.com/FreylGit/chat-server/internal/closer"
+	"github.com/FreylGit/platform_common/pkg/closer"
+
 	"github.com/FreylGit/chat-server/internal/config"
 	desc "github.com/FreylGit/chat-server/pkg/chat_v1"
 	"google.golang.org/grpc"

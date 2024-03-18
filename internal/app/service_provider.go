@@ -3,10 +3,11 @@ package app
 import (
 	"context"
 	chatImp "github.com/FreylGit/chat-server/internal/api/chat"
-	"github.com/FreylGit/chat-server/internal/client/db"
-	"github.com/FreylGit/chat-server/internal/client/db/pg"
-	"github.com/FreylGit/chat-server/internal/client/db/transaction"
-	"github.com/FreylGit/chat-server/internal/closer"
+	"github.com/FreylGit/platform_common/pkg/closer"
+	"github.com/FreylGit/platform_common/pkg/db"
+	"github.com/FreylGit/platform_common/pkg/db/pg"
+	"github.com/FreylGit/platform_common/pkg/db/transaction"
+
 	"github.com/FreylGit/chat-server/internal/config"
 	"github.com/FreylGit/chat-server/internal/repository"
 	"github.com/FreylGit/chat-server/internal/repository/chat"

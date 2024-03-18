@@ -2,9 +2,9 @@ package message
 
 import (
 	"context"
-	"github.com/FreylGit/chat-server/internal/client/db"
 	"github.com/FreylGit/chat-server/internal/model"
 	"github.com/FreylGit/chat-server/internal/repository"
+	"github.com/FreylGit/platform_common/pkg/db"
 	sq "github.com/Masterminds/squirrel"
 )
 
