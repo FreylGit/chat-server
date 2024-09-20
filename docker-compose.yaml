@@ -1,0 +1,64 @@
+version: "3"
+
+volumes:
+  postgres_chat_volume:
+  prometheus_data:
+  grafana_data:
+
+services:
+  pg_chat:
+    image: postgres:14-alpine3.19
+    environment:
+      - "POSTGRES_DB=${PG_DATABASE_NAME}"
+      - "POSTGRES_USER=${PG_USER}"
+      - "POSTGRES_PASSWORD=${PG_PASSWORD}"
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres_chat_volume:/var/lib/postgresql/data
+    networks:
+      - pg_network
+  migrator:
+    build:
+      context: .
+      dockerfile: migrator.Dockerfile
+    restart: on-failure
+    environment:
+      DB_HOST: pg_chat
+      PG_DATABASE_NAME: ${PG_DATABASE_NAME}
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_PORT: 5432
+      MIGRATION_DIR: ${MIGRATION_DIR}
+      PG_DSN: ${PG_DSN}
+    volumes:
+      - ./migrations:/root/migrations
+      - ./.env:/root/.env
+    networks:
+      - pg_network
+  prometheus:
+    image: prom/prometheus:v2.37.9
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alerts.yml:/etc/prometheus/alerts.yml
+      - prometheus_data:/prometheus
+  grafana:
+    image: grafana/grafana-oss:10.0.3
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+  jaeger:
+    image: jaegertracing/all-in-one:1.48
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "16686:16686" #web
+      - "14268:14268"
+      - "9411:9411"
+
+networks:
+  pg_network:
